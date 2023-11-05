@@ -6,13 +6,17 @@ cursor = connection.cursor()
 # create tables
 create_users_table = """
 CREATE TABLE IF NOT EXISTS USERS (
-     user_ID INT AUTO_INCREMENT PRIMARY KEY,
+     User_ID INT AUTO_INCREMENT PRIMARY KEY,
      Username VARCHAR(20) not null,
      User_Password VARCHAR(20) not null,
+     LoggedInTime TIMESTAMP,
+     LoggedOutTime TIMESTAMP, 
+     Duration INT, 
+     Pages_Accessed INT, 
+     Transactions_done INT, 
      created_at timestamp
 );
 """
-
 create_voter_table = """
 CREATE TABLE IF NOT EXISTS VOTER (
     ID INT AUTO_INCREMENT,
@@ -65,7 +69,7 @@ CREATE TABLE IF NOT EXISTS VOTER (
     Voting_First_Time BOOLEAN,
     Constituency_Name VARCHAR(255) NOT NULL,
     Polling_Booth_Name VARCHAR(255) NOT NULL,
-    FOREIGN KEY(ID) REFERENCES USERS(user_ID)
+    FOREIGN KEY(ID) REFERENCES USERS(User_ID)
 );
 """
 
