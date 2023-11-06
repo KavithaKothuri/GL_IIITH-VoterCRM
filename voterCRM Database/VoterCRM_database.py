@@ -138,6 +138,7 @@ CREATE TABLE IF NOT EXISTS POLICE_CASE (
     FOREIGN KEY (Voter_ID) REFERENCES VOTER(Voter_ID)
 );
 """
+
 create_payments_table =""" 
 CREATE TABLE PAYMENTS (
     Payment_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -155,8 +156,7 @@ CREATE TABLE PAYMENTS (
     Payment_Receipt VARCHAR(255),
     Payment_AuthorizationCode VARCHAR(50),
     Refund_Information TEXT,
-    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID),
-    FOREIGN KEY (Voter_ID) REFERENCES VOTER(Voter_ID)
+    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID)
 );
 """
 
@@ -177,8 +177,7 @@ CREATE TABLE SUBSCRIPTIONS (
     Last_Payment_Date DATE,
     Next_Billing_Date DATE,
     Billing_Address VARCHAR(255),
-    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID),
-    FOREIGN KEY (Voter_ID) REFERENCES VOTER(Voter_ID)
+    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID)
 );
 """
 
@@ -191,11 +190,9 @@ CREATE TABLE USER_ACTIVITY (
     Duration INT,
     Pages_Accessed INT,
     Transactions_done INT,
-    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID),
-    FOREIGN KEY (Voter_ID) REFERENCES VOTER(Voter_ID)
+    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID)
 );
 """
-
 
 cursor.execute(create_users_table)
 cursor.execute(create_voter_table)
