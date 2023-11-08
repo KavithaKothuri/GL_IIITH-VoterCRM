@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS USERS (
      User_ID INT AUTO_INCREMENT PRIMARY KEY,
      Username VARCHAR(20) NOT NULL,
      User_Password VARCHAR(60) NOT NULL,
-     User_Role ENUM('Voter','Candidate','Party Worker') DEFAULT 'Voter',
      created_at TIMESTAMP NOT NULL
 );
 """
