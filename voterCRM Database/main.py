@@ -41,28 +41,6 @@ def create_table(connection, table_creation_statement):
     except Exception as err:
         print("Error in table creation: '{err}'")
 
-# Read the Excel data into a Pandas DataFrame
-df = pd.read_excel("D:\CAPSTONE PROJECT\voterCRM\voterCRM sample data.xlsx")
-
-def insert_many_records(connection, sql, values):
-    cursor = connection.cursor()
-    try:
-        cursor.execute(sql,values)
-        connection.commit()
-        print("Insert operation successful")
-    except Exception as err:
-        print("Error in insert query:'{err}'")
-
-def fetch_voter_data():
-    try:
-        cursor = connection.cursor()
-        cursor.execute(" SELECT * FROM VOTER")
-        data = cursor.fetchall()
-        return data
-    except Exception as e:
-        print(f"Error fetching data: {str(e)}")
-        return []
-
 # Streamlit app 
 """
 def main():
