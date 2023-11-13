@@ -7,7 +7,7 @@ from sqlconnection import connection, cursor
 csv_file = "voterCRM_sample_data.csv"
 data = pd.read_csv(csv_file)
 
-# Insert data from a CSV file into a table
+#Insert data from a CSV file into a table
 def insert_data_from_csv(csv_filename, table_name):
     with open(csv_filename, 'r') as csvfile:
         csv_reader = csv.reader(csvfile)
@@ -19,7 +19,7 @@ def insert_data_from_csv(csv_filename, table_name):
             print("Data insertion completed")
             
 
-# Insert data into each table
+#Insert data into each table
 insert_data_from_csv('voterCRM_sample_data.csv', 'USERS')
 insert_data_from_csv('voterCRM_sample_data.csv', 'VOTER')
 insert_data_from_csv('voterCRM_sample_data.csv', 'ADDRESS')
