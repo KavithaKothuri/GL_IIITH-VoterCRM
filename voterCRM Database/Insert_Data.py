@@ -6,8 +6,6 @@ DB = "VOTER_DATA"  # This is the name of the database
 
 CONFIG_PATH = "D:\CAPSTONE PROJECT\voterCRM\voterCRM sample data.xlsx"
 USERS = 'users'
-PRODUCTS = 'products'
-ORDERS = 'orders'
 
 
 with open(CONFIG_PATH + USERS + '.csv','r') as f:
