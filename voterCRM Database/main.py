@@ -62,7 +62,8 @@ def fetch_voter_data():
         print(f"Error fetching data: {str(e)}")
         return []
 
-# Streamlit app
+# Streamlit app 
+"""
 def main():
     st.title("Voter Database")
 
@@ -80,7 +81,7 @@ def main():
         st.table(voter_data)
     else:
         st.error("Failed to connect to the database.")
-
+"""
 
 def close_connection(connection):
     if connection:
