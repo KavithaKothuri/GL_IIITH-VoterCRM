@@ -1,12 +1,11 @@
 import csv
 from sqlconnection import connection
-import database as db
+from sqlconnection import database as db
 
-DB = "VOTER_DATA"  # This is the name of the database 
+db = "VOTER_DATA"  # This is the name of the database 
 
 CONFIG_PATH = "D:\CAPSTONE PROJECT\voterCRM\voterCRM sample data.xlsx"
 USERS = 'users'
-
 
 with open(CONFIG_PATH + USERS + '.csv','r') as f:
     values = []
