@@ -16,7 +16,7 @@ with open(CONFIG_PATH + USERS + '.csv','r') as f:
     for row in data:
         values.append(tuple(row))
     sql =  """
-    insert into users (user_id,user_name, user_email, user_password, user_address, is_vendor)
+    insert into users (user_id,user_name, user_email, user_password, user_address)
     values ("%s,%s,%s,%s,%s,%s")
     """
     values.pop(0)
