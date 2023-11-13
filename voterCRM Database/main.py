@@ -1,6 +1,7 @@
 # pip install mysql-connector-python streamlit
 # pip install mysql-connector-python
 import pandas as pd
+from pip import main
 import streamlit as st
 from sqlite3 import Cursor
 
