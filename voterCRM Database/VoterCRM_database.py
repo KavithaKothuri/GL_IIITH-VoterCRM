@@ -167,7 +167,7 @@ CREATE TABLE SUBSCRIPTIONS (
     Plan_ID INT unique,
     Start_Date DATE,
     End_Date DATE,
-    Status ENUM('active', 'pending', 'canceled', 'expired'),
+    Subscription_status ENUM('active', 'pending', 'canceled', 'expired'),
     Billing_Cycle ENUM('monthly', 'annually'),
     Payment_Method VARCHAR(255),
     Auto_Renew ENUM('YES', 'NO'),
