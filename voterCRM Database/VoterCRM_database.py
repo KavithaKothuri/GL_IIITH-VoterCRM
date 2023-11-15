@@ -6,7 +6,7 @@ cursor = connection.cursor()
 # create tables
 create_users_table = """
 CREATE TABLE IF NOT EXISTS USERS (
-     User_ID INT PRIMARY KEY UNIQUE,
+     User_ID VARCHAR(20) PRIMARY KEY UNIQUE,
      Username VARCHAR(20) NOT NULL,
      User_Password VARCHAR(60) NOT NULL,
      User_Role ENUM('Admin', 'Candidate', 'Party_worker', 'Voter') NOT NULL,
@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS USERS (
 create_voter_table = """
 CREATE TABLE IF NOT EXISTS VOTER (
     Voter_ID INT PRIMARY KEY UNIQUE,
+    User_ID VARCHAR(20) NOT NULL,
     Voter_Name VARCHAR(255) NOT NULL,
     Voter_FatherOrHusband_Name VARCHAR(255),
     Voter_Gender VARCHAR(10),
@@ -65,8 +66,8 @@ CREATE TABLE IF NOT EXISTS VOTER (
     Dependents INT CHECK (Dependents >= 0),
     Has_Own_Car BOOLEAN,
     Has_Own_Bike BOOLEAN,
-    FOREIGN KEY(Voter_ID) REFERENCES USERS(User_ID),
-    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
+    FOREIGN KEY(User_ID) REFERENCES USERS(User_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) = 'Voter')
 );
 """
 
@@ -74,14 +75,16 @@ create_address_table = """
 CREATE TABLE IF NOT EXISTS ADDRESS (
     Address_ID INT AUTO_INCREMENT PRIMARY KEY,
     Voter_ID INT,
+    User_ID VARCHAR(20) NOT NULL,
     Address VARCHAR(255) NOT NULL,
     Street_Name VARCHAR(255) NOT NULL,
     Ward VARCHAR(10) NOT NULL,
     Pin_Code VARCHAR(10) NOT NULL,
     Address_Latitude DECIMAL(10, 8) NOT NULL,
     Address_Longitude DECIMAL(11, 8) NOT NULL,
+    FOREIGN KEY(User_ID) REFERENCES USERS(User_ID),
     FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID),
-    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) = 'Voter')
 );
 """
 
@@ -89,10 +92,12 @@ create_contact_table ="""
 CREATE TABLE IF NOT EXISTS CONTACT (
     Contact_ID INT AUTO_INCREMENT PRIMARY KEY,
     Voter_ID INT,
+    User_ID VARCHAR(20) NOT NULL,
     Phone_Number VARCHAR(15) UNIQUE,
     WhatsApp_Number VARCHAR(15) UNIQUE,
+    FOREIGN KEY(User_ID) REFERENCES USERS(User_ID),
     FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID),
-    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) = 'Voter')
 );
 """
 
@@ -100,12 +105,14 @@ create_family_table = """
 CREATE TABLE IF NOT EXISTS FAMILY (
     Family_ID INT AUTO_INCREMENT PRIMARY KEY,
     Voter_ID INT,
+    User_ID VARCHAR(20) NOT NULL,
     Number_of_Votes_In_Family INT CHECK (Number_of_Votes_In_Family >= 0),
     Number_of_Votes_In_Extended_Family INT CHECK (Number_of_Votes_In_Extended_Family >= 0),
     Members_Visited_Foreign_Country INT CHECK (Members_Visited_Foreign_Country >= 0),
     Dependents INT CHECK (Dependents >= 0),
+    FOREIGN KEY(User_ID) REFERENCES USERS(User_ID),
     FOREIGN KEY (Voter_ID) REFERENCES VOTER (Voter_ID),
-    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) = 'Voter')
 );
 """
 
@@ -113,10 +120,12 @@ create_religion_table = """
 CREATE TABLE IF NOT EXISTS RELIGION (
     Religion_ID INT AUTO_INCREMENT PRIMARY KEY,
     Voter_ID INT,
+    User_ID VARCHAR(20) NOT NULL,
     Voter_Religion VARCHAR(255) NOT NULL,
     Voter_Caste VARCHAR(255) NOT NULL,
+    FOREIGN KEY(User_ID) REFERENCES USERS(User_ID),
     FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID),
-    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) = 'Voter')
 );
 """
 
@@ -124,13 +133,15 @@ create_political_affiliation_table = """
 CREATE TABLE IF NOT EXISTS POLITICAL_AFFILIATION (
     Political_Affiliation_ID INT AUTO_INCREMENT PRIMARY KEY,
     Voter_ID INT,
+    User_ID VARCHAR(20) NOT NULL,
     Voter_Political_Party VARCHAR(255) NOT NULL,
     Local_MLA_Political_Party VARCHAR(255) NOT NULL,
     Opposition_Party_MLA_Candidate_Political_Party VARCHAR(255) NOT NULL,
     Local_Corporator_Political_Party VARCHAR(255) NOT NULL,
     Preferred_Political_Party_To_Vote VARCHAR(255) NOT NULL,
+    FOREIGN KEY(User_ID) REFERENCES USERS(User_ID),
     FOREIGN KEY (Voter_ID) REFERENCES VOTER (Voter_ID),
-    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) = 'Voter')
 );
 """
 
@@ -138,17 +149,19 @@ create_police_case_table = """
 CREATE TABLE IF NOT EXISTS POLICE_CASE (
     Police_Case_ID INT AUTO_INCREMENT PRIMARY KEY,
     Voter_ID INT ,
+    User_ID VARCHAR(20) NOT NULL,
     Police_Cases_On_Voter INT CHECK (Police_Cases_On_Voter >= 0),
     Police_Cases_On_Family_Members INT  CHECK (Police_Cases_On_Family_Members >= 0),
+    FOREIGN KEY(User_ID) REFERENCES USERS(User_ID),
     FOREIGN KEY (Voter_ID) REFERENCES VOTER(Voter_ID),
-    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) = 'Voter')
 );
 """
 
 create_payments_table =""" 
 CREATE TABLE PAYMENTS (
     Payment_ID INT AUTO_INCREMENT PRIMARY KEY,
-    User_ID INT,
+    User_ID VARCHAR(20) NOT NULL,
     Payment_DateTime DATETIME,
     Payment_Amount DECIMAL(10, 2),
     Currency VARCHAR(3),
@@ -170,12 +183,12 @@ CREATE TABLE PAYMENTS (
 create_subscriptions_table = """
 CREATE TABLE SUBSCRIPTIONS (
     Subscription_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Subscription_Type ENUM('individual', 'group'),
-    User_ID INT,
+    Subscription_Type ENUM('Individual', 'Group'),
+    User_ID VARCHAR(20) NOT NULL,
     Plan_ID INT unique,
     Start_Date DATE,
     End_Date DATE,
-    Subscription_status ENUM('active', 'pending', 'canceled', 'expired'),
+    Subscription_status ENUM('Active', 'Pending', 'Cancelled', 'Expired'),
     Billing_Cycle ENUM('monthly', 'annually'),
     Payment_Method VARCHAR(255),
     Auto_Renew ENUM('YES', 'NO'),
@@ -192,7 +205,7 @@ CREATE TABLE SUBSCRIPTIONS (
 create_user_activity_table = """
 CREATE TABLE USER_ACTIVITY (
     Activity_ID INT AUTO_INCREMENT PRIMARY KEY,
-    User_ID INT,
+    User_ID VARCHAR(20) NOT NULL,
     LoggedIn_Time TIMESTAMP,
     LoggedOut_Time TIMESTAMP,
     Duration INT,
