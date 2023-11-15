@@ -1,11 +1,8 @@
 # pip install mysql-connector-python streamlit
 # pip install mysql-connector-python
 import pandas as pd
-from pip import main
-import streamlit as st
-from sqlite3 import Cursor
-
-from sqlconnection import connection
+from Insert_data import *
+from sqlconnection import *
 
 # Establish a database connection
 def create_server_connection(connection):
@@ -41,30 +38,12 @@ def create_table(connection, table_creation_statement):
     except Exception as err:
         print("Error in table creation: '{err}'")
 
-# Streamlit app 
-"""
-def main():
-    st.title("Voter Database")
-
-    # Establish a database connection
-    connection = create_server_connection()
-
-    if connection is not None:
-        # Fetch data from voter table
-        voter_data = fetch_voter_data()
-        for row in voter_data:
-            print(row)
-
-        # display the data in a streamlit table
-        st.write("Voter Data")
-        st.table(voter_data)
-    else:
-        st.error("Failed to connect to the database.")
-"""
-
 def close_connection(connection):
     if connection:
         connection.close()
 
 if __name__ == "__main__":
-    main()
+    connection = create_server_connection()
+    create_and_switch_database(connection, database, database)
+    create_table(connection, create_voter_table) 
+    close_connection(connection)
