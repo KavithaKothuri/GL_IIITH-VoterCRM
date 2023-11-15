@@ -31,7 +31,6 @@ connection = create_server_connection(host, user, password, database)
 
 if connection is not None:
     cursor = connection.cursor()
-    # You can now use the cursor to execute SQL queries or other database operations
 else:
     print("Connection to the database was not successful. Check your connection parameters and make sure the database server is running.")
 
