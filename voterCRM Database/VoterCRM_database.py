@@ -6,23 +6,22 @@ cursor = connection.cursor()
 # create tables
 create_users_table = """
 CREATE TABLE IF NOT EXISTS USERS (
-     User_ID INT AUTO_INCREMENT PRIMARY KEY,
+     User_ID INT PRIMARY KEY UNIQUE,
      Username VARCHAR(20) NOT NULL,
      User_Password VARCHAR(60) NOT NULL,
+     User_Role ENUM('Admin', 'Candidate', 'Party_worker', 'Voter') NOT NULL,
      created_at TIMESTAMP NOT NULL
 );
 """
 
 create_voter_table = """
 CREATE TABLE IF NOT EXISTS VOTER (
-    ID INT AUTO_INCREMENT,
     Voter_ID INT PRIMARY KEY UNIQUE,
     Voter_Name VARCHAR(255) NOT NULL,
     Voter_FatherOrHusband_Name VARCHAR(255),
     Voter_Gender VARCHAR(10),
     Voter_Marital_Status VARCHAR(20),
     Voter_Age INT CHECK (Voter_Age >= 18),
-    Is_Voter_Handicap BOOLEAN,
     Voter_Educational_Qualification VARCHAR(255) NOT NULL,
     Voter_Profession VARCHAR(255) NOT NULL,
     Voter_Income_Per_Month DECIMAL(10, 2) CHECK (Voter_Income_Per_Month >= 0),
@@ -30,8 +29,6 @@ CREATE TABLE IF NOT EXISTS VOTER (
     Voter_Family_Income_Per_Month DECIMAL(10, 2) CHECK (Voter_Family_Income_Per_Month >= 0),
     Votes_In_Family INT CHECK (Votes_In_Family >= 0),
     Votes_In_Extended_Family INT CHECK (Votes_In_Extended_Family >= 0),
-    Members_Visited_Foreign_Country INT CHECK (Members_Visited_Foreign_Country >= 0),
-    Dependents INT CHECK (Dependents >= 0),
     Is_Politically_Neutral BOOLEAN,
     Government_Benefits BOOLEAN,
     Family_Government_Benefits BOOLEAN,
@@ -41,8 +38,6 @@ CREATE TABLE IF NOT EXISTS VOTER (
     Police_Cases_On_Voter INT CHECK (Police_Cases_On_Voter >= 0),
     Police_Cases_On_Family_Members INT CHECK (Police_Cases_On_Family_Members >= 0),
     Has_Own_House BOOLEAN,
-    Has_Own_Car BOOLEAN,
-    Has_Own_Bike BOOLEAN,
     Native_Or_Migrant VARCHAR(20),
     Mother_Tongue VARCHAR(255),
     Opinion_On_Present_Government TEXT,
@@ -65,7 +60,13 @@ CREATE TABLE IF NOT EXISTS VOTER (
     Voting_First_Time BOOLEAN,
     Constituency_Name VARCHAR(255) NOT NULL,
     Polling_Booth_Name VARCHAR(255) NOT NULL,
-    FOREIGN KEY(ID) REFERENCES USERS(User_ID)
+    Is_Voter_Handicap BOOLEAN,
+    Members_Visited_Foreign_Country INT CHECK (Members_Visited_Foreign_Country >= 0),
+    Dependents INT CHECK (Dependents >= 0),
+    Has_Own_Car BOOLEAN,
+    Has_Own_Bike BOOLEAN,
+    FOREIGN KEY(Voter_ID) REFERENCES USERS(User_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
 );
 """
 
@@ -74,12 +75,13 @@ CREATE TABLE IF NOT EXISTS ADDRESS (
     Address_ID INT AUTO_INCREMENT PRIMARY KEY,
     Voter_ID INT,
     Address VARCHAR(255) NOT NULL,
+    Street_Name VARCHAR(255) NOT NULL,
+    Ward VARCHAR(10) NOT NULL,
     Pin_Code VARCHAR(10) NOT NULL,
     Address_Latitude DECIMAL(10, 8) NOT NULL,
     Address_Longitude DECIMAL(11, 8) NOT NULL,
-    Street_Name VARCHAR(255) NOT NULL,
-    Ward VARCHAR(10) NOT NULL,
-    FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID)
+    FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
 );
 """
 
@@ -89,7 +91,8 @@ CREATE TABLE IF NOT EXISTS CONTACT (
     Voter_ID INT,
     Phone_Number VARCHAR(15) UNIQUE,
     WhatsApp_Number VARCHAR(15) UNIQUE,
-    FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID)
+    FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
 );
 """
 
@@ -101,7 +104,8 @@ CREATE TABLE IF NOT EXISTS FAMILY (
     Number_of_Votes_In_Extended_Family INT CHECK (Number_of_Votes_In_Extended_Family >= 0),
     Members_Visited_Foreign_Country INT CHECK (Members_Visited_Foreign_Country >= 0),
     Dependents INT CHECK (Dependents >= 0),
-    FOREIGN KEY (Voter_ID) REFERENCES VOTER (Voter_ID)
+    FOREIGN KEY (Voter_ID) REFERENCES VOTER (Voter_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
 );
 """
 
@@ -111,7 +115,8 @@ CREATE TABLE IF NOT EXISTS RELIGION (
     Voter_ID INT,
     Voter_Religion VARCHAR(255) NOT NULL,
     Voter_Caste VARCHAR(255) NOT NULL,
-    FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID)
+    FOREIGN KEY(Voter_ID) REFERENCES VOTER(Voter_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
 );
 """
 
@@ -124,7 +129,8 @@ CREATE TABLE IF NOT EXISTS POLITICAL_AFFILIATION (
     Opposition_Party_MLA_Candidate_Political_Party VARCHAR(255) NOT NULL,
     Local_Corporator_Political_Party VARCHAR(255) NOT NULL,
     Preferred_Political_Party_To_Vote VARCHAR(255) NOT NULL,
-    FOREIGN KEY (Voter_ID) REFERENCES VOTER (Voter_ID)
+    FOREIGN KEY (Voter_ID) REFERENCES VOTER (Voter_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
 );
 """
 
@@ -134,7 +140,8 @@ CREATE TABLE IF NOT EXISTS POLICE_CASE (
     Voter_ID INT ,
     Police_Cases_On_Voter INT CHECK (Police_Cases_On_Voter >= 0),
     Police_Cases_On_Family_Members INT  CHECK (Police_Cases_On_Family_Members >= 0),
-    FOREIGN KEY (Voter_ID) REFERENCES VOTER(Voter_ID)
+    FOREIGN KEY (Voter_ID) REFERENCES VOTER(Voter_ID),
+    CONSTRAINT CHECK_ROLE CHECK ((SELECT User_Role FROM USERS WHERE User_ID = Voter_ID) = 'Voter')
 );
 """
 
@@ -155,7 +162,8 @@ CREATE TABLE PAYMENTS (
     Payment_Receipt VARCHAR(255),
     Payment_AuthorizationCode VARCHAR(50),
     Refund_Information TEXT,
-    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID)
+    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID),
+    CONSTRAINT CHECK_ROLE_PAYMENT CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) IN ('Admin', 'Candidate','Party_worker'))
 );
 """
 
@@ -176,7 +184,8 @@ CREATE TABLE SUBSCRIPTIONS (
     Last_Payment_Date DATE,
     Next_Billing_Date DATE,
     Billing_Address VARCHAR(255),
-    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID)
+	FOREIGN KEY (User_ID) REFERENCES USERS(User_ID),
+    CONSTRAINT CHECK_ROLE_SUBSCRIPTION CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) IN ('Admin','Candidate','Party_worker'))
 );
 """
 
@@ -189,7 +198,8 @@ CREATE TABLE USER_ACTIVITY (
     Duration INT,
     Pages_Accessed INT,
     Transactions_done INT,
-    FOREIGN KEY (User_ID) REFERENCES USERS(User_ID)
+	FOREIGN KEY (User_ID) REFERENCES USERS(User_ID),
+    CONSTRAINT CHECK_ROLE_USER_ACTIVITY CHECK ((SELECT User_Role FROM USERS WHERE User_ID = User_ID) IN ('Admin','Candidate','Party_worker'))
 );
 """
 
