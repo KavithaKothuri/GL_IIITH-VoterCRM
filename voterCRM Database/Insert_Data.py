@@ -18,7 +18,6 @@ def insert_data_from_csv(csv_filename, table_name):
             cursor.execute(insert_query, row)
             print("Data insertion completed")
             
-
 #Insert data into each table
 insert_data_from_csv('voterCRM_sample_data.csv', 'USERS')
 insert_data_from_csv('voterCRM_sample_data.csv', 'VOTER')
@@ -29,16 +28,6 @@ insert_data_from_csv('voterCRM_sample_data.csv', 'RELIGION')
 insert_data_from_csv('voterCRM_sample_data.csv', 'POLITICAL_AFFILIATION')
 insert_data_from_csv('voterCRM_sample_data.csv', 'POLICE_CASE')
 
-def fetch_voter_data():
-    try:
-        cursor = connection.cursor()
-        cursor.execute(" SELECT * FROM VOTER")
-        data = cursor.fetchall()
-        return data
-    except Exception as e:
-        print(f"Error fetching data: {str(e)}")
-        return []
-        
 # Commit the changes and close the connection
 connection.commit()
 connection.close()
